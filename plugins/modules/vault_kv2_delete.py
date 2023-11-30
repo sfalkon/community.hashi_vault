@@ -49,6 +49,12 @@ options:
       - For kv2, do not include C(/data/) or C(/metadata/).
     type: str
     required: True
+  permanent:
+    description:
+      Delete all versions and metadata
+    default: False
+    type: bool
+    required: False
   versions:
     description:
       - One or more versions of the secret to delete.
@@ -76,6 +82,17 @@ EXAMPLES = """
     auth_method: userpass
     username: user
     password: '{{ passwd }}'
+
+
+- name: Delete all versions and metadata of the secret/mysecret secret.
+  community.hashi_vault.vault_kv2_delete:
+    url: https://vault:8201
+    path: secret/mysecret
+    permanent: True
+    auth_method: userpass
+    username: user
+    password: '{{ passwd }}'
+  register: result
 """
 
 RETURN = """
@@ -110,6 +127,7 @@ def run_module():
     argspec = HashiVaultModule.generate_argspec(
         engine_mount_point=dict(type='str', default='secret'),
         path=dict(type='str', required=True),
+        permanent=dict(type='bool', default=False, required=False),
         versions=dict(type='list', elements='int', required=False)
     )
 
@@ -127,6 +145,7 @@ def run_module():
     engine_mount_point = module.params.get('engine_mount_point')
     path = module.params.get('path')
     versions = module.params.get('versions')
+    permanent = module.params.get('permanent')
 
     module.connection_options.process_connection_options()
     client_args = module.connection_options.get_hvac_connection_options()
@@ -143,6 +162,8 @@ def run_module():
         # and delete specific versions.
         if module.check_mode:
             response = {}
+        elif permanent:
+            response = client.secrets.kv.v2.delete_metadata_and_all_versions(path, mount_point=engine_mount_point)
         elif not versions:
             response = client.secrets.kv.v2.delete_latest_version_of_secret(
                 path=path, mount_point=engine_mount_point)

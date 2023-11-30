@@ -692,3 +692,10 @@ releases:
     - 403-core-vault-python.yml
     - 6.0.0.yml
     release_date: '2023-11-05'
+  6.0.1-devel:
+    chaneg:
+      added_features:
+      - Add permanently delete of secret
+    fragments:
+      - 6.0.0.yml
+
