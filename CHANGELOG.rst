@@ -4,6 +4,18 @@ community.hashi_vault Release Notes
 
 .. contents:: Topics
 
+v6.0.1-devel
+======
+
+Release Summary
+---------------
+
+This relise add new functionaly to delete module
+
+New Feature
+----------------------------------------
+
+- New feature for delete module. Add permanent parametr for delete all version and metadata of secret/
 
 v6.0.0
 ======
